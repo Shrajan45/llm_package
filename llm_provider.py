@@ -1,16 +1,20 @@
 import openai
 import pandas as pd
-from transformer import pipeline
+from transformers import pipeline
 from .prompt_handler import PromptHandler
 
 
 class LLMProvider():
-    def __init__(self,provider:str,api_key:str,prompt_template:str,max_tokens=4096):
+    def __init__(self,provider:str,api_key:str,prompt_template:str,max_tokens=4096,hf_model=None):
         self.provider=provider
         self.api_key=api_key
         self.max_tokens=max_tokens
+        self.hf_model=hf_model
         self.prompt_handler=PromptHandler(prompt_template)
 
+        if self.provider=="huggingface" and self.hf_model:
+             self.hf_pipline=pipeline('text-generation',model=hf_model)
+        
     def querry(self,prompt:str):
         if self.provider=='openai':
             openai.api=self.api_key
